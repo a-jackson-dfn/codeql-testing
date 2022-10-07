@@ -1,3 +1,5 @@
+using Microsoft.Data.SqlClient;
+
 namespace test;
 
 public class Worker : BackgroundService
@@ -16,6 +18,8 @@ public class Worker : BackgroundService
             if (true)
             {
                 var random = new Random();
+
+                await GetData();
             }
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -27,5 +31,15 @@ public class Worker : BackgroundService
         {
 
         }
+    }
+
+    private async Task GetData() 
+    {
+        using var connection = new SqlConnection("connection string");
+        using var command = new SqlCommand();
+        command.Connection = connection;
+        command.CommandText = "SELECT * FROM table WHERE field " + Environment.GetEnvironmentVariable("VAR");
+
+        await command.ExecuteNonQueryAsync();
     }
 }
